@@ -1,0 +1,73 @@
+package com.cts.userservice.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.cts.userservice.model.BookingDto;
+import com.cts.userservice.model.LoginResponseDto;
+import com.cts.userservice.model.UserDto;
+import com.cts.userservice.service.UserService;
+
+
+import jakarta.validation.Valid;
+
+
+
+@RestController
+@RequestMapping("/users")
+@CrossOrigin(origins = "http://localhost:5173")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+    
+
+    @PostMapping("/register")
+    public UserDto registerUser(@Valid @RequestBody UserDto userDto) {
+        return userService.registerUser(userDto);
+    }
+
+    @PostMapping("/login")
+    public LoginResponseDto loginUser(@RequestBody UserDto userDto) {
+        return userService.loginUser(userDto);
+    }
+
+
+    @GetMapping("/profile/{id}")
+    public UserDto findProfileById(@PathVariable("id") int userId) {
+        return userService.findProfileById(userId);
+    }
+
+    @PutMapping("/profile/{id}")
+    public UserDto updateUserProfile(@PathVariable int id, @Valid @RequestBody UserDto userDto) {
+        return userService.updateUserProfile(id, userDto);
+    }
+
+    
+    @DeleteMapping("/profile/{id}")
+    public String deleteUserProfile(@PathVariable("id") int userId) {
+        userService.deleteUserProfile(userId);
+        return "User profile deleted successfully.";
+    }
+    
+	@GetMapping("/bookings/user/{userId}")
+	public ResponseEntity<List<BookingDto>> getBookingsByUserId(@PathVariable int userId) {
+	    List<BookingDto> bookings = userService.getBookingsByUserId(userId);
+	    return ResponseEntity.ok(bookings);
+	}
+	
+	@GetMapping("/admin/users")
+	public ResponseEntity<List<UserDto>> getAllUsers() {
+	    return ResponseEntity.ok(userService.getAllUsers());
+	}
+	
+    @GetMapping("/admin/users/getuid/{email}")
+    public int getUidFromEmail(@PathVariable ("email") String email) {
+    	return userService.getUserFromEmail(email);
+    }
+
+
+}

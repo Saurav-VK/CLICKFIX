@@ -1,0 +1,22 @@
+package com.cts.clickfix.appconfig;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.cts.clickfix.model.BillToDto;
+import com.cts.clickfix.model.BookingDto;
+
+@FeignClient(name = "BOOKING-SERVICE")
+public interface BookingFeignClient {
+    @GetMapping(value = "/booking-api/bookings/getuser/{bookingId}")
+    public BillToDto getUserDetailsForInvoice(@PathVariable ("bookingId") int bookingId); 
+    
+    @GetMapping(value="booking-api/bookings/{bookingId}")
+    public BookingDto getBookingById(@PathVariable ("bookingId") int bookingId);
+    
+    @GetMapping("/booking-api/bookings/getinvoiceId/{bookingId}")
+	public int getInvoiceId(@PathVariable ("bookingId") int bookingId);
+    	
+    }
+

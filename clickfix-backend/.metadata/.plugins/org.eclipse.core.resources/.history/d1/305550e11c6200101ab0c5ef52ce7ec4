@@ -1,0 +1,125 @@
+package com.cts.bookingservice.controller;
+
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cts.bookingservice.model.AutoFillDto;
+import com.cts.bookingservice.model.BillToDto;
+import com.cts.bookingservice.model.BookingDto;
+import com.cts.bookingservice.model.InvoiceDto;
+import com.cts.bookingservice.model.InvoiceReciptDto;
+import com.cts.bookingservice.model.ServiceDetailsDto;
+import com.cts.bookingservice.model.ServiceTypeDisplayDto;
+import com.cts.bookingservice.model.UserDto;
+import com.cts.bookingservice.model.VehicleNameDto;
+import com.cts.bookingservice.service.BookingServiceImpl;
+
+
+@RestController
+@RequestMapping("/booking-api")
+@CrossOrigin(origins = "http://localhost:5173")
+public class BookingController {
+	@Autowired
+	private BookingServiceImpl bookingService;
+	
+	@PostMapping(value = "/bookings")
+	public BookingDto addBooking(@RequestBody BookingDto bookingDto) {
+//		bookingDto.setDate(LocalDate.now());
+//		bookingDto.setTimeSlot(LocalTime.now());
+		return bookingService.addBooking(bookingDto);
+	}
+	@GetMapping(value="/bookings/{bookingId}")
+	public BookingDto getBookingById(@PathVariable int bookingId) {
+		return bookingService.getBookingById(bookingId);
+	}
+	@GetMapping("/bookings/user/{userId}")
+	public ResponseEntity<List<BookingDto>> getBookingsByUserId(@PathVariable int userId) {
+	    List<BookingDto> bookings = bookingService.getBookingsByUserId(userId);
+	    return ResponseEntity.ok(bookings);
+	}
+
+	@DeleteMapping(value="/bookings/{bookingId}")
+	public String deleteBookingById(@PathVariable int bookingId) {
+		return bookingService.deleteBookingById(bookingId);
+	}
+
+	@PutMapping("/bookings/{bookingId}")
+	public ResponseEntity<BookingDto> updateBooking(@PathVariable int bookingId, @RequestBody BookingDto bookingDto) {
+		bookingDto.setBookingId(bookingId); // ensure ID is set
+		BookingDto updated = bookingService.updateBooking(bookingDto);
+		return ResponseEntity.ok(updated);
+	}
+
+	@GetMapping(value="/bookings/status/{bookingId}")
+	public String getBookingStatus(@PathVariable int bookingId) {
+		return bookingService.getBookingStatus(bookingId);
+	}
+	
+	@GetMapping(value = "/bookings/getuser/{bookingId}")
+	public BillToDto getUserFromBookingId(@PathVariable("bookingId") int bookingId) {
+		return bookingService.getUserFromBookingId(bookingId);
+	}
+	
+	@GetMapping(value = "/bookings/autofill/{userId}")
+	public AutoFillDto autoFillUserDetails(@PathVariable("userId") int userId) {
+		return bookingService.autoFillUserDetails(userId);
+	}
+	
+	@GetMapping(value = "/bookings/displayvehicles/{userId}")
+	public List<VehicleNameDto> getAllVehicles(@PathVariable ("userId") int userId) {
+		return bookingService.getAllVehicles(userId);
+	}
+	
+	@GetMapping("/bookings/completeservice")
+	public ResponseEntity<Map<String , Object>> completeService(int bookingId) {
+		return bookingService.completeService(bookingId);
+	}
+	
+	@GetMapping("/bookings/invoicehistory/{userId}")
+	public List<InvoiceReciptDto> getUserInvoices(@PathVariable ("userId") int userId) {
+		return bookingService.getUserInvoices(userId);
+	}
+
+	@GetMapping("bookings/service-centers")
+	public List<ServiceDetailsDto> getAllServiceCenters() {
+		return bookingService.getAllServiceCenters();
+	}
+	
+	@GetMapping("bookings/service-types")
+	public List<ServiceTypeDisplayDto> getAllServiceTypes() {
+		return bookingService.getAllServiceTypes();
+	}
+    
+	@GetMapping("bookings/get-v-id/{registration-Number}")
+	public int getVIdFromName(@PathVariable("registration-Number") String vehicleName) {
+		return bookingService.getVehicleIdFromName(vehicleName);
+	}
+	
+	@GetMapping("bookings/get-sc-id/{centerName}")
+	public int getSCIdFromName(@PathVariable("centerName") String centerName) {
+		return bookingService.getScIdFromName(centerName);
+	}
+	
+	@GetMapping("/bookings/getinvoiceId/{bookingId}")
+	public int getInvoiceId(@PathVariable ("bookingId") int bookingId) {
+		return bookingService.getInvoiceId(bookingId);
+	}
+	@GetMapping(value="/bookings/getall")
+	public ResponseEntity<List<BookingDto>> getAllBookings() {
+	    List<BookingDto> allBookings = bookingService.getAllBookings();
+	    return ResponseEntity.ok(allBookings);
+	}
+}

@@ -1,0 +1,28 @@
+package com.cts.clickfix.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+
+import com.cts.clickfix.entity.Invoice;
+import com.cts.clickfix.model.BillToDto;
+import com.cts.clickfix.model.InvoiceDto;
+import com.cts.clickfix.model.InvoiceHistoryDto;
+import com.cts.clickfix.model.InvoiceReciptDto;
+import com.cts.clickfix.model.PayableDto;
+
+public interface InvoiceService {
+	
+	public InvoiceDto generateInvoice(InvoiceDto invoice);
+	public InvoiceDto getInvoiceById(int invoiceId);
+	public List<InvoiceDto> paymentStatusList(String paymentStatus);
+	public ResponseEntity<Map<String , Object>> updateInvoiceDetails(InvoiceDto invoice);
+	public InvoiceDto deleteInvoice(int invoiceId);
+	public List<InvoiceDto> findInvoiceByBooking(int bookingId);
+	public BillToDto getUserDetailsForInvoice(int bookingId);
+	public InvoiceReciptDto generateRecipt(int invoiceId);
+	public int getInvoiceId(int bookingId);
+	public List<InvoiceHistoryDto> displayHistory(int userId);
+	public void completeTransaction(int invoiceId)
+}

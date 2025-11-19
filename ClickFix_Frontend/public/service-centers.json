@@ -1,0 +1,33 @@
+[
+    {
+      "serviceCenterId": 101,
+      "name": "CTS Auto Service",
+      "location": "Chennai",
+      "contact": 9876543210
+    },
+    {
+      "serviceCenterId": 102,
+      "name": "SpeedFix Garage",
+      "location": "Coimbatore",
+      "contact": 9845123456
+    },
+    {
+      "serviceCenterId": 103,
+      "name": "Elite Car Care",
+      "location": "Madurai",
+      "contact": 9823456789
+    },
+    {
+      "serviceCenterId": 104,
+      "name": "AutoPro Services",
+      "location": "Trichy",
+      "contact": 9812345670
+    },
+    {
+      "serviceCenterId": 105,
+      "name": "DriveWell Center",
+      "location": "Salem",
+      "contact": 9801234567
+    }
+  ]
+  

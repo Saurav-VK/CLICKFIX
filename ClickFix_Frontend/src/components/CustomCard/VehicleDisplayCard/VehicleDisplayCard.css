@@ -1,0 +1,89 @@
+
+.vehicle-card {
+  --bs-card-spacer-y: 5% !important;
+  --bs-card-spacer-x: 5% !important;
+    width: 100%;
+    height: 10%;
+    /* max-width: 18rem; */
+    min-width: 11rem;
+
+    display: flex;
+    flex-direction: column;
+
+    border: 1px solid;
+    padding: 1px;
+    border-radius: 0.75rem;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    
+   
+    /* box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+     */
+    /*box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; */
+    /* box-shadow: 0 20px 20px #233C56; */
+    transition: transform 0.1s ease;
+  }
+  
+  .vehicle-card:hover {
+    transform: scale(1.05);
+    /* box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6); */
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+
+/*-----------------------below styles apply inside of the card-----------------------------------------------------------------------*/
+  .overflow-preventer {
+    /* background-color: blueviolet; */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .vehicle-card .card-title {
+    /* background-color:chartreuse; */
+    color: #2c2c2c;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.1rem;
+  }
+  
+  
+
+  .image-container{
+    position: relative;
+  }
+
+  .image-container img{
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .overlay-title {
+    position:sticky;
+    top: 20%;
+    left: 10%;
+    padding: 12px 20px;
+    margin-bottom: 1%;
+
+    background-color: rgba(192, 192, 192, 1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    color: white;
+    font-weight: bold;
+    z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+  }
+
+  .btn-3d {
+    border-radius: 8px;
+    background-color: #0d6efd;
+    border: none;
+    box-shadow: 0 4px 0 #084298;
+    color: white;
+    padding: 10px 20px;
+    font-weight: bold;
+    transition: all 0.1s ease-in-out;
+  }

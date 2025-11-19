@@ -1,0 +1,247 @@
+package com.cts.bookingservice.service;
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.client.RestTemplate;
+
+import com.cts.bookingservice.appconfig.InvoiceFeignClient;
+import com.cts.bookingservice.appconfig.ServiceCenterFeignClient;
+import com.cts.bookingservice.appconfig.ServiceTypeFeignClient;
+import com.cts.bookingservice.appconfig.UserFeignClient;
+import com.cts.bookingservice.appconfig.VehicleFeignClient;
+import com.cts.bookingservice.entity.Booking;
+import com.cts.bookingservice.exception.BookingIdIsNotFoundException;
+import com.cts.bookingservice.exception.BookingUpdateFailureException;
+import com.cts.bookingservice.exception.UserIdIsNotFoundException;
+import com.cts.bookingservice.model.AutoFillDto;
+import com.cts.bookingservice.model.BillToDto;
+import com.cts.bookingservice.model.BookingDto;
+import com.cts.bookingservice.model.InvoiceDto;
+import com.cts.bookingservice.model.InvoiceReciptDto;
+import com.cts.bookingservice.model.ServiceCenterDto;
+import com.cts.bookingservice.model.ServiceDetailsDto;
+import com.cts.bookingservice.model.ServiceTypeDetails;
+import com.cts.bookingservice.model.ServiceTypeDisplayDto;
+import com.cts.bookingservice.model.ServiceTypeDto;
+import com.cts.bookingservice.model.UserDto;
+import com.cts.bookingservice.model.VehicleDto;
+import com.cts.bookingservice.model.VehicleNameDto;
+import com.cts.bookingservice.repository.BookingRepository;
+
+@Service
+public class BookingServiceImpl implements BookingService{
+	@Autowired
+	private BookingRepository bookingRepository;
+	
+	@Autowired
+	private ModelMapper modelMapper;
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	@Autowired
+	private UserFeignClient userFeignClient;
+	
+	@Autowired
+	private VehicleFeignClient vehicleFeignClient;
+	
+	@Autowired
+	private InvoiceFeignClient invoiceFeignClient;
+	
+	@Autowired
+	private ServiceCenterFeignClient serviceCenterFeignClient;
+	
+	@Autowired
+	private ServiceTypeFeignClient serviceTypeFeignClient;
+	
+	public BookingDto addBooking(BookingDto bookingDto) {
+		Booking booking=modelMapper.map(bookingDto,Booking.class);
+		Booking resultEntity=bookingRepository.save(booking);
+		BookingDto resBooking = modelMapper.map(resultEntity, BookingDto.class);
+		String invoiceUrl = "http://localhost:9090/invoice/create";
+		String serviceName = bookingDto.getServiceType();
+		String serviceTypeUrl = "http://localhost:9093/servicetype/getserviceid/" + serviceName;
+		
+		ServiceTypeDetails details = restTemplate.getForObject(serviceTypeUrl, ServiceTypeDetails.class);
+		InvoiceDto invoice = InvoiceDto.builder().bookingId(resBooking.getBookingId()).serviceTypeId(details.getServiceTypeId()).paymentStatus("Pending").totalAmount(details.getPrice()).build();
+		ResponseEntity<InvoiceDto> resInvoice = restTemplate.postForEntity(invoiceUrl, invoice, InvoiceDto.class);
+		
+		return modelMapper.map(resultEntity, BookingDto.class);
+	}
+	public BookingDto getBookingById(int bookingId) {
+		BookingDto bookingDto=null;
+		Optional<Booking> optionalBooking=bookingRepository.findById(bookingId);
+		if(optionalBooking.isPresent()){
+			bookingDto=modelMapper.map(optionalBooking.get(),BookingDto.class);
+		}else {
+			throw new BookingIdIsNotFoundException("booking id: "+bookingId+ " is not there in db");
+		}
+		return bookingDto;	
+	}
+	public List<BookingDto> getBookingsByUserId(int userId) {
+	    List<Booking> bookings = bookingRepository.findAllByUserId(userId);
+	    if (bookings.isEmpty()) {
+	        throw new UserIdIsNotFoundException("No bookings found for user ID: " + userId);
+	    }
+	    return bookings.stream()
+	                   .map(booking -> modelMapper.map(booking, BookingDto.class))
+	                   .collect(Collectors.toList());
+	}
+
+	public String deleteBookingById(@PathVariable int bookingId) {
+		String response = null;
+		boolean result = bookingRepository.existsById(bookingId);
+		if (result) {
+			bookingRepository.deleteById(bookingId);
+			response = "booking with id: " + bookingId + " is deleted sucessfully";
+		} else {
+			response = "delete is failed due to none existence of booking id: " + bookingId;
+		}
+		return response;
+	}
+
+
+	public BookingDto updateBooking(BookingDto bookingDto) {
+		boolean exists = bookingRepository.existsById(bookingDto.getBookingId());
+		if (exists) {
+//			bookingDto.setDate(LocalDate.now());
+//			bookingDto.setTimeSlot(LocalTime.now());
+			Booking booking = modelMapper.map(bookingDto, Booking.class);
+			Booking updatedBooking = bookingRepository.save(booking);
+			return modelMapper.map(updatedBooking, BookingDto.class);
+		} else {
+			throw new BookingUpdateFailureException("Booking ID does not exist");
+		}
+	}
+
+
+	public String getBookingStatus(@PathVariable int bookingId) {
+		Optional<Booking> optional = bookingRepository.findById(bookingId);
+		if (optional.isPresent()) {
+			return optional.get().getStatus();
+		}else {
+			throw new BookingIdIsNotFoundException("Booking with ID " + bookingId + " not found");
+		}
+	}
+	
+	public BillToDto getUserFromBookingId(int bookingId) {
+		Optional<Booking> booking = bookingRepository.findById(bookingId);
+		UserDto user = null;
+		if(booking.isPresent()) {
+			BookingDto dto = modelMapper.map(booking.get(), BookingDto.class);
+			int userId = dto.getUserId();
+//			String url = "http://localhost:9096/users/profile/" + userId;
+//			user = restTemplate.getForObject(url, UserDto.class);
+			user = userFeignClient.getUserFromUserId(userId);
+		}
+		BillToDto res = BillToDto.builder().name(user.getName()).email(user.getEmail()).address(user.getAddress()).phoneNo(user.getPhone()).build();
+		return res;	
+	}
+	
+	public AutoFillDto autoFillUserDetails(int userId) {
+		
+		UserDto user = userFeignClient.getUserFromUserId(userId);
+		AutoFillDto res = AutoFillDto.builder().name(user.getName()).email(user.getEmail()).phone(user.getPhone()).build();
+		return res;
+		
+	}
+	
+	public List<VehicleNameDto> getAllVehicles(int userId) {
+		List<VehicleDto> allVehicles = vehicleFeignClient.getAllVehicles(userId).getBody();
+		List<VehicleNameDto> allVehicleNames = new ArrayList<VehicleNameDto>();
+		for(VehicleDto vehicle : allVehicles) {
+			String brand = vehicle.getMake();
+			String name = vehicle.getModel();
+			String regNo = vehicle.getRegistrationNumber();
+			VehicleNameDto vhc_nam = VehicleNameDto.builder().make(brand).model(name).registrationNumber(regNo).build();
+			allVehicleNames.add(vhc_nam);
+		}
+		
+		return allVehicleNames;
+	}
+	
+	public ResponseEntity<Map<String , Object>> completeService(int bookingId) {
+		List<InvoiceDto> invoices = invoiceFeignClient.findInvoice(bookingId);
+		InvoiceDto invoice = invoices.get(0);
+		System.out.println("Fetched invoice ID: " + invoice.getInvoiceId());
+		invoice.setInvoiceId(invoice.getInvoiceId());
+		invoice.setBookingId(bookingId);
+		invoice.setServiceTypeId(invoice.getServiceTypeId());
+		invoice.setTotalAmount(invoice.getTotalAmount());
+		invoice.setPaymentStatus("Completed");
+		ResponseEntity<Map<String , Object>> updatedInfo = invoiceFeignClient.updatePaymentStatus(invoice);
+		return updatedInfo;
+	}
+	
+	public List<InvoiceReciptDto> getUserInvoices (int userId) {
+		List<Booking> userBookingsEntityList = bookingRepository.findAllByUserId(userId);
+		List<BookingDto> userBookings = userBookingsEntityList.stream().map(booking -> modelMapper.map(booking, BookingDto.class)).collect(Collectors.toList());
+		List<InvoiceDto> userInvoices = userBookings.stream().map(booking -> invoiceFeignClient.findInvoice(booking.getBookingId()).get(0)).collect(Collectors.toList());
+		
+		List<InvoiceReciptDto> reciptList = new ArrayList<InvoiceReciptDto>();
+		
+		for(InvoiceDto invoice : userInvoices) {
+			InvoiceReciptDto recipt = invoiceFeignClient.getRecipt(invoice.getInvoiceId());
+			reciptList.add(recipt);
+		}
+		
+		return reciptList;
+	}
+
+
+    public List<ServiceDetailsDto> getAllServiceCenters() {
+    	ResponseEntity<List<ServiceCenterDto>> response = serviceCenterFeignClient.getAllServiceCenters();
+    	List<ServiceCenterDto> services = response.getBody();
+    	List<ServiceDetailsDto> res = new ArrayList<ServiceDetailsDto>();
+    	for(ServiceCenterDto service : services) {
+    		ServiceDetailsDto details = ServiceDetailsDto.builder().name(service.getName()).location(service.getLocation()).build();
+    		res.add(details);
+    	}
+    	return res;
+    }
+    
+    public List<ServiceTypeDisplayDto> getAllServiceTypes() {
+    	List<ServiceTypeDto> types = serviceTypeFeignClient.getAllServiceTypes().getBody();
+    	List<ServiceTypeDisplayDto> res = new ArrayList<ServiceTypeDisplayDto>();
+    	for(ServiceTypeDto type : types) {
+    		ServiceTypeDisplayDto s_type = ServiceTypeDisplayDto.builder().serviceName(type.getServiceName()).price(type.getPrice()).build();
+    		res.add(s_type);
+    	}
+    	return res;
+    }
+    
+    public int getVehicleIdFromName(String name) {
+    	return vehicleFeignClient.getIdFromRegNo(name);
+    }
+    
+    public int getScIdFromName(String name) {
+    	return serviceCenterFeignClient.getServiceCenterId(name);
+    }
+    
+    public int getInvoiceId(int bookingId) {
+    	return invoiceFeignClient.getInvoiceId(bookingId);
+    }
+    public List<BookingDto> getAllBookings() {
+	    List<Booking> bookings = bookingRepository.findAll();
+	    return bookings.stream()
+	                   .map(booking -> modelMapper.map(booking, BookingDto.class))
+	                   .collect(Collectors.toList());
+	}
+    
+    public void completePayment(int bookingId) {
+    	BookingDto booking = getBookingById(bookingId);
+    	booking.setStatus('Paid');
+    }
+
+}
+

@@ -1,0 +1,180 @@
+.payment-container {
+  max-width: 500px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.trusted-badge {
+  background: #e0f7fa;
+  color: #00796b;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.method {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.method:hover {
+  background-color: #f9f9f9;
+}
+
+.dropdown {
+  margin-top: 10px;
+  padding-left: 10px;
+}
+
+.dropdown label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.dropdown select,
+.dropdown input {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+/* ✅ Correct radio button layout */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+  align-items: flex-start;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.radio-option input[type="radio"] {
+  margin: 0;
+}
+
+.payment-footer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  color: black;
+}
+
+.amount-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.amount-section a {
+  font-size: 12px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.amount-section a:hover {
+  text-decoration: underline;
+}
+
+.upi-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.success-message {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: #2ecc71;
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-details label {
+  font-size: 0.85rem;
+}
+
+.card-details input {
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card-row {
+  display: flex;
+  gap: 8px;
+}
+
+.card-row > div {
+  flex: 1;
+}
+
+.remember-row {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.8rem;
+}

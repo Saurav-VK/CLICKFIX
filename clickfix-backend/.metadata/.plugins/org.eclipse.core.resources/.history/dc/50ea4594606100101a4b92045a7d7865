@@ -1,0 +1,29 @@
+package com.cts.userservice.service;
+
+
+import java.util.List;
+
+import com.cts.userservice.model.BookingDto;
+import com.cts.userservice.model.LoginResponseDto;
+import com.cts.userservice.model.UserDto;
+
+public interface UserService {
+
+    UserDto registerUser(UserDto userDto);
+
+    LoginResponseDto loginUser(UserDto userDto);
+    
+    public List<BookingDto> getBookingsByUserId(int userId);
+    
+
+    List<UserDto> getAllUsers();
+
+
+    UserDto findProfileById(int userId);
+
+    UserDto updateUserProfile(int userId, UserDto userDto);
+
+    void deleteUserProfile(int userId);
+    
+  
+}

@@ -1,0 +1,7 @@
+.img-preview-admin {
+    max-width: 300px;   /* Limits how wide the image can get */
+    max-height: 400px;  /* Keeps it from being too tall */
+    margin-top: 1rem;   /* Equivalent to Bootstrap's mt-3 */
+    object-fit: cover;  /* Preserves aspect ratio and prevents stretching */
+    border-radius: 0.5rem; /* Optional: adds some visual softness */
+  }

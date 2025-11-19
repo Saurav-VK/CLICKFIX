@@ -1,0 +1,26 @@
+[
+    {
+        "mechanicId": 1,
+        "serviceCenterId": 101,
+        "name": "Arun Kumar",
+        "expertise": "Engine Repair"
+    },
+    {
+        "mechanicId": 2,
+        "serviceCenterId": 101,
+        "name": "Priya Sharma",
+        "expertise": "Electrical Systems"
+    },
+    {
+        "mechanicId": 3,
+        "serviceCenterId": 102,
+        "name": "Ravi Verma",
+        "expertise": "Brake Systems"
+    },
+    {
+        "mechanicId": 4,
+        "serviceCenterId": 103,
+        "name": "Sneha Reddy",
+        "expertise": "Air Conditioning"
+    }
+]

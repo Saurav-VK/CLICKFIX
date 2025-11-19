@@ -1,0 +1,185 @@
+package com.cts.clickfix.service;
+
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.cts.clickfix.exception.InvalidPaymentStatusException;
+import com.cts.clickfix.exception.InvoiceAlreadyExistsException;
+import com.cts.clickfix.exception.InvoiceNotFoundException;
+import com.cts.clickfix.appconfig.BookingFeignClient;
+import com.cts.clickfix.entity.Invoice;
+import com.cts.clickfix.model.BillToDto;
+import com.cts.clickfix.model.BookingDto;
+import com.cts.clickfix.model.InvoiceDto;
+import com.cts.clickfix.model.InvoiceHistoryDto;
+import com.cts.clickfix.model.InvoiceReciptDto;
+import com.cts.clickfix.model.PayableDto;
+import com.cts.clickfix.model.UserDto;
+import com.cts.clickfix.repository.InvoiceRepository;
+
+@Service
+public class InvoiceServiceImpl implements InvoiceService{
+
+	@Autowired
+	InvoiceRepository invoiceRepository;
+	
+	@Autowired
+	ModelMapper modelMapper;
+	
+	@Autowired
+	RestTemplate restTemplate;
+	
+	@Autowired
+	BookingFeignClient bookingFeignClient;
+	
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//function to generate and display invoices
+	
+	public InvoiceDto generateInvoice(InvoiceDto invoice) {
+		
+	    	Invoice resObj = modelMapper.map(invoice, Invoice.class);
+	    	invoiceRepository.save(resObj);
+	    	return invoice;
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//function to extract invoice by id
+	
+	public InvoiceDto getInvoiceById(int invoiceId) {
+		Optional<Invoice> invoice = invoiceRepository.findById(invoiceId);
+		if(invoice.isPresent()) {
+			Invoice resObj = invoice.get();
+			InvoiceDto matchingInvoice = modelMapper.map(resObj, InvoiceDto.class);
+			return matchingInvoice;
+		}
+		else {
+			throw new InvoiceNotFoundException("Invalid Invoice ID");
+		}
+	}
+	
+	
+	//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//function to get all the invoices that share the same payment status
+	
+	public List<InvoiceDto> paymentStatusList(String paymentStatus) {
+		
+//		List<Invoice> statusList = new ArrayList<Invoice>();
+//		List<Invoice> invoiceList = invoiceRepository.findAll();
+//		for(Invoice invoice : invoiceList) {
+//			if(invoice.getPaymentStatus().equals(paymentStatus)) {
+//				statusList.add(invoice);
+//			}
+//		}
+        
+		List<String> list = List.of("Pending" , "Processing" , "Completed");
+		
+		if(!list.contains(paymentStatus)) {
+			throw new InvalidPaymentStatusException("Please enter a valid payment status (Pending , Processing or Completed)");
+		}
+		
+		List<Invoice> statusList =  invoiceRepository.findByPaymentStatus(paymentStatus); 
+		
+		List<InvoiceDto> resultList = statusList.stream().map(invoice -> modelMapper.map(invoice, InvoiceDto.class)).collect(Collectors.toList());
+		return resultList;
+	}
+	
+	
+	//-------------------------------------------------------------------------------------------------------------------------
+	//function to update invoice details
+	public ResponseEntity<Map<String , Object>> updateInvoiceDetails(InvoiceDto invoice) {
+		
+		Optional<Invoice> invoiceOptional = invoiceRepository.findById(invoice.getInvoiceId());
+		if(invoiceOptional.isPresent())
+		{
+			Invoice invoiceObj = invoiceOptional.get();
+			invoiceObj.setPaymentStatus(invoice.getPaymentStatus());
+			InvoiceDto updatedObj = modelMapper.map(invoiceObj , InvoiceDto.class);
+			
+			invoiceRepository.save(invoiceObj);
+			
+			Map<String , Object> responseMap = new HashMap<String, Object>();
+			responseMap.put("Response message", "Entity has been updated");
+			responseMap.put("updated Entity", updatedObj);
+			
+			return ResponseEntity.ok(responseMap);
+		}
+		throw new InvoiceNotFoundException("User with ID: " + invoice.getInvoiceId() + "Please enter valid credentials");
+	}
+	
+	
+	//-------------------------------------------------------------------------------------------------------------------------------
+	//function to delete an invoice
+	
+	public InvoiceDto deleteInvoice(int invoiceId) {
+		Optional<Invoice> invoice = invoiceRepository.findById(invoiceId);
+		if(invoice.isPresent()) {
+			invoiceRepository.deleteById(invoiceId);
+			InvoiceDto model = modelMapper.map(invoice.get(), InvoiceDto.class);
+			return model;
+		}
+		return null;
+	}
+
+
+	@Override
+	public List<InvoiceDto> findInvoiceByBooking(int bookingId) {
+		List<Invoice> bookings = invoiceRepository.findByBookingId(bookingId);
+		List<InvoiceDto> res = bookings.stream().map(invoice -> modelMapper.map(invoice , InvoiceDto.class)).collect(Collectors.toList());
+        return res;
+	}
+	
+	public BillToDto getUserDetailsForInvoice(int bookingId) {
+//		String url = "http://localhost:9091/booking-api/bookings/getuser/" + bookingId;
+//		UserDto res = restTemplate.getForObject(url , UserDto.class);
+//		BillToDto userDetails = BillToDto.builder().name(res.getName()).email(res.getEmail()).address(res.getAddress()).phoneNo(res.getPhone()).build();
+		BillToDto userDetails = bookingFeignClient.getUserDetailsForInvoice(bookingId);
+		return userDetails;
+	}
+	
+	public InvoiceReciptDto generateRecipt(int invoiceId) {
+		Optional<Invoice> invoice = invoiceRepository.findById(invoiceId);
+		InvoiceReciptDto recipt = new InvoiceReciptDto();
+		
+		if(invoice.isPresent()) {
+			InvoiceDto dto = modelMapper.map(invoice.get(), InvoiceDto.class);
+			recipt.setAmount(dto.getTotalAmount());
+			recipt.setQuantity(1);
+			BookingDto booking = bookingFeignClient.getBookingById(dto.getBookingId());
+			recipt.setServiceName(booking.getServiceType());
+			int tax = 25;
+			recipt.setTax(tax);
+			recipt.setTotal(dto.getTotalAmount() + ((tax * dto.getTotalAmount()) / 100));
+			recipt.setStatus(dto.getPaymentStatus());
+		}
+		return recipt;
+	}
+	
+	public List<InvoiceHistoryDto> displayHistory(int userId) {
+		List<BookingDto> bookings = userFeignClient.getBookingsByUserId(userId);
+		List<InvoiceHistoryDto> history = new ArrayList<InvoiceHistoryDto>();
+		for(BookingDto booking : bookings) {
+			int invoiceId = bookingFeignClient.getInvoiceId(booking.getBookingId());
+			InvoiceReciptDto recipt = generateRecipt(invoiceId);
+			InvoiceHistoryDto inv_history = InvoiceHistoryDto.builder().bookingId(booking.getBookingId()).invoiceId(invoiceId).serviceName(booking.getServiceType()).quantity(1).status(booking.getStatus()).amount(recipt.getAmount()).tax(recipt.getTax()).total(recipt.getTotal()).build();
+			history.add(inv_history);
+		}
+		return history;
+	}
+	
+	public int getInvoiceId(int bookingId) {
+		List<InvoiceDto> invoice = findInvoiceByBooking(bookingId);
+		return invoice.get(0).getInvoiceId();
+	}
+	
+}

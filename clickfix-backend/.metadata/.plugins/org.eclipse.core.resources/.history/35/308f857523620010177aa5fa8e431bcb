@@ -1,0 +1,143 @@
+package com.cts.clickfix.vehicleservice.service;
+
+import org.modelmapper.ModelMapper;
+
+
+
+
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import  java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.cts.clickfix.vehicleservice.appconfig.UserServiceClient;
+import com.cts.clickfix.vehicleservice.entity.Vehicle;
+import com.cts.clickfix.vehicleservice.exception.NoVehiclesFoundException;
+import com.cts.clickfix.vehicleservice.exception.VehicleIdNotFoundException;
+import com.cts.clickfix.vehicleservice.exception.VehicleUpdateFailureException;
+import com.cts.clickfix.vehicleservice.model.AdminVehicleDto;
+import com.cts.clickfix.vehicleservice.model.UserDto;
+import com.cts.clickfix.vehicleservice.model.VehicleDto;
+import com.cts.clickfix.vehicleservice.repository.VehicleRepository;
+import java.nio.file.Path;
+
+@Service
+public class VehicleServiceImpl  implements VehicleService{
+	
+	private static final String UPLOAD_DIR = "uploads/";
+
+	@Autowired
+	private VehicleRepository vehicleRepository;
+	
+    @Autowired
+    private UserServiceClient userServiceClient;
+    
+	@Autowired
+	private ModelMapper modelMapper;
+	
+	public VehicleDto addVehicles(VehicleDto vehicleDto) {
+		Vehicle vehicle = modelMapper.map(vehicleDto, Vehicle.class);
+		Vehicle result = vehicleRepository.save(vehicle);
+		VehicleDto dto = modelMapper.map(result, VehicleDto.class);
+		return dto;
+	}
+	
+	public VehicleDto getVehicle(int userId) {
+		VehicleDto vehicles = null;
+		Optional<Vehicle> optionalVehicle = vehicleRepository.findById(userId);
+		if (optionalVehicle.isEmpty()) {
+			throw new VehicleIdNotFoundException("Vehicle with ID "  + userId + " not found");
+		} else {
+			
+			vehicles = modelMapper.map(optionalVehicle.get(), VehicleDto.class);
+		}
+		return vehicles;
+	}
+	
+	public List<VehicleDto> getAllVehiclesByUserId(int userId){
+		List<Vehicle> vehicles = vehicleRepository.findByUserId(userId);
+		if(vehicles.isEmpty()) {
+			throw new NoVehiclesFoundException("No vehicles found for user with ID: " + userId);
+		}
+		return vehicles.stream().map(vehicle -> modelMapper.map(vehicle, VehicleDto.class)).
+				collect(Collectors.toList());
+
+	}
+	public VehicleDto updateVehicle(VehicleDto vehicleDto) {
+		VehicleDto vehicleDTO = null;
+		boolean vehicleExists = vehicleRepository.existsById(vehicleDto.getVehicleId());
+		if(vehicleExists) {
+			Vehicle vehicle = vehicleRepository.save(modelMapper.map(vehicleDto, Vehicle.class));
+			vehicleDTO = modelMapper.map(vehicle,VehicleDto.class);
+		}else {
+			System.out.println("vehicle id not found ");
+			throw new VehicleUpdateFailureException("Failed to update vehicle: Vehicle with ID "+ vehicleDto.getVehicleId() +" not found.");
+		}
+		return vehicleDTO;
+	}
+	
+	public String deleteVehicle(int vehicleId) {
+		String respo = null;
+		boolean result = vehicleRepository.existsById(vehicleId);
+		if(result) {
+			vehicleRepository.deleteById(vehicleId);
+			respo = "vehilce with id: "+ vehicleId + " is deleted successfully";
+		} else {
+			respo = "delete is failed due to non-existence of vehicle with ID: " + vehicleId;
+		}
+		return respo;
+	}
+	
+	
+	
+	public String storeImage(MultipartFile file) {
+        try {
+            File uploadDir = new File(UPLOAD_DIR);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path filePath = (Path) Paths.get(UPLOAD_DIR, filename);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return "http://localhost:9092/" + filename;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store image", e);
+        }
+    }
+	
+	public int getIdFromRegNo(String regNo) {
+		return vehicleRepository.findByRegistrationNumber(regNo)
+		        .map(Vehicle::getVehicleId).orElseThrow(() -> new NoVehiclesFoundException("Vehicle not found for registration number: " + regNo));
+	}
+	
+	public List<UserDto> fetchAllUsers() {
+        return userServiceClient.getAllUsers().getBody();
+    }
+	
+	public List<AdminVehicleDto> getAllVehiclesAdmin() {
+	    List<UserDto> users = fetchAllUsers();
+
+	    return users.stream().map(user -> AdminVehicleDto.builder()
+	        .userId(user.getUserId())
+	        .name(user.getName())
+	        .email(user.getEmail())
+	        .phone(user.getPhone())
+	        .userVehicleList(getAllVehiclesByUserId(user.getUserId())) 
+	        .build()
+	    ).collect(Collectors.toList());
+	}
+
+	
+	
+}

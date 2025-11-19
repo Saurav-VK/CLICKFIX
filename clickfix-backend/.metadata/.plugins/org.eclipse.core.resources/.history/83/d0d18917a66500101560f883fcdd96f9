@@ -1,0 +1,32 @@
+package com.cts.bookingservice.appconfig;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.cts.bookingservice.model.InvoiceDto;
+import com.cts.bookingservice.model.InvoiceReciptDto;
+
+
+@FeignClient(name = "INVOICE-SERVICE")
+public interface InvoiceFeignClient {
+	
+	@GetMapping("/invoice/findbybooking/{bookingId}")
+	public List<InvoiceDto> findInvoice(@PathVariable ("bookingId") int bookingId);
+	
+	@PutMapping( "/invoice/update" )
+	public ResponseEntity<Map<String , Object>> updatePaymentStatus(@RequestBody InvoiceDto invoice);
+    
+	@GetMapping("/invoice/displayrecipt/{invoiceId}")
+	public InvoiceReciptDto getRecipt(@PathVariable ("invoiceId") int invocieId);
+	
+	@GetMapping("/invoice/getinvoiceId/{bookingId}")
+	public int getInvoiceId(@PathVariable ("bookingId") int bookingId);
+}

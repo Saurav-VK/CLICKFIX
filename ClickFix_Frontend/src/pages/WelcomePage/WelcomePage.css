@@ -1,0 +1,133 @@
+.welcome-bg {
+  background-image: url('../../assets/bg-1.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  width: 120px;
+  margin-bottom: 20px;
+  animation: fadeInDown 1s ease-out;
+}
+
+.heading {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeInUp 1.2s ease-out;
+}
+
+.custom-button {
+  margin: 0.5rem;
+  padding: 0.75rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  animation: fadeInUp 1.4s ease-out;
+}
+
+.custom-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.left-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin-top: 30px;
+}
+
+.logo-moving {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  /* position: static; */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .welcome-content {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .left-side {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .logo {
+    width: 80px;
+  }
+
+  .heading {
+    font-size: 1.5rem;
+  }
+
+  .custom-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .heading {
+    font-size: 2rem;
+  }
+
+  .logo {
+    width: 100px;
+  }
+
+  .custom-button {
+    font-size: 1rem;
+  }
+}

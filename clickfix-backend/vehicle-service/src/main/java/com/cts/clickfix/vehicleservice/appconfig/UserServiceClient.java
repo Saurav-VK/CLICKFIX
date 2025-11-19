@@ -1,0 +1,16 @@
+package com.cts.clickfix.vehicleservice.appconfig;
+
+import java.util.List;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import com.cts.clickfix.vehicleservice.model.UserDto;
+
+@FeignClient(name = "USERSERVICE" , configuration = FeignClientConfig.class) // Replace with actual URL or use service discovery
+public interface UserServiceClient {
+
+    @GetMapping("/users/admin/users")
+    ResponseEntity<List<UserDto>> getAllUsers();
+}

@@ -1,0 +1,39 @@
+[
+    {
+        "serviceTypeId": 201,
+        "description": "If your car needs a mobile diagnostic check done at your home or office, let ClickFix come to you.",
+        "price": 499.0,
+        "serviceName": "Diagnostics"
+    },
+    {
+        "serviceTypeId": 202,
+        "description": "ClickFix specializes in car dent repair and car painting services for a range of models.",
+        "price": 699.0,
+        "serviceName": "Dents, Paint & Detailing"
+    },
+    {
+        "serviceTypeId": 203,
+        "description": "ClickFix serves the Lube, Oil & Filter change needs of customers' vehicle performance while extending the life of your vehicle.",
+        "price": 899.0,
+        "serviceName": "Oil, Lube & Filter"
+    },
+    {
+        "serviceTypeId": 204,
+        "description": "The brake system consists of different parts like drum and calipers that can be fixed individually. ",
+        "price": 699.0,
+        "serviceName": "Brakes"
+    },
+    {
+        "serviceTypeId": 204,
+        "description": "The suspension system of your vehicle protects you from bouncing up and down due to the bad road conditions and bumps in the road.",
+        "price": 2199.0,
+        "serviceName": "Suspension"
+    }
+    ,
+    {
+        "serviceTypeId": 204,
+        "description": "The engine and transmission are the heart of your vehicle. We provide a full range of services to keep them running smoothly.",
+        "price": 3999.0,
+        "serviceName": "Engine & Transmission"
+    }
+]

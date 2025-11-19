@@ -1,0 +1,6 @@
+.vehicle-tab-container {
+    /* background-color: rgb(168, 241, 255); */
+    flex: 1 1 auto;
+    min-height: 100%;
+
+  }

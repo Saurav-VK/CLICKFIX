@@ -1,0 +1,5 @@
+package com.cts.bookingservice.appconfig;
+
+public class FeignClientConfig {
+
+}

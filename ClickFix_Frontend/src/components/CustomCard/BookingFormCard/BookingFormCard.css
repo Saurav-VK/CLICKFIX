@@ -1,0 +1,139 @@
+body {
+  background-color: #ffffff;
+  font-family: Arial, sans-serif;
+  color: #333333;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Booking Form Container === */
+.booking-form {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 700px;
+  margin: 30px auto;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); 
+}
+
+/* === Heading === */
+.booking-form h2 {
+  text-align: center;
+  color: #333333;
+  font-weight: bold;
+}
+
+/* === Form Sections === */
+fieldset {
+  border: none;
+  margin-bottom: 15px;
+  padding: 10px 0;
+}
+
+legend {
+  color: #333333;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* === Input Rows === */
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.form-row label {
+  width: 150px;
+  margin-right: 10px;
+  color: #333333;
+}
+
+.form-row input,
+.form-row select,
+.booking-form textarea {
+  flex: 1;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  color: #333333;
+}
+
+/* Autofill Highlight */
+input.auto-filled {
+  border: 1px solid #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+}
+
+/* === Booking Summary === */
+.booking-details {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  width: 96%;
+}
+
+.booking-details h2 {
+  text-align: center;
+  color: #333333;
+  margin-bottom: 10px;
+}
+
+.booking-details table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.details-table th,
+.details-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+  color: #333333;
+}
+
+.details-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+
+/* Style for date and time input icons */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(29%) sepia(98%) saturate(748%) hue-rotate(180deg) brightness(95%) contrast(90%);
+  cursor: pointer;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .form-row label {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .form-row input,
+  .form-row select {
+    width: 100%;
+  }
+
+  .button-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .booking-form {
+    padding: 15px;
+  }
+
+  .booking-details {
+    width: 100%;
+    padding: 10px;
+  }
+}

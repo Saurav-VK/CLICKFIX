@@ -1,0 +1,38 @@
+package com.example.demo;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.io.Decoders;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.security.Key;
+
+public class JwtExample {
+    public static void main(String[] args) {
+        String email = "admin@clickfix.com";
+        int userId = 42;
+        String passwordHash = "abc123xyzHashed";
+
+        // This should match the SECRET used in your JwtUtility class
+        String secret = "5367566859703373367639792F423F452848284D6251655468576D5A71347437";
+        Key signKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("passwordHash", passwordHash);
+
+        String jwt = Jwts.builder()
+            .setClaims(claims)
+            .setSubject(email)
+            .setIssuedAt(new Date(1710000000000L)) // Timestamp from your payload
+            .setExpiration(new Date(1710001800000L)) // Expiration timestamp
+            .signWith(signKey, SignatureAlgorithm.HS256)
+            .compact();
+
+        System.out.println("JWT: " + jwt);
+    }
+}
+

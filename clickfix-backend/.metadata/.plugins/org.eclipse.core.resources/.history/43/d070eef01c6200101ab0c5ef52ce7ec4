@@ -1,0 +1,36 @@
+package com.cts.bookingservice.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import com.cts.bookingservice.model.AutoFillDto;
+import com.cts.bookingservice.model.BillToDto;
+import com.cts.bookingservice.model.BookingDto;
+import com.cts.bookingservice.model.InvoiceReciptDto;
+import com.cts.bookingservice.model.ServiceDetailsDto;
+import com.cts.bookingservice.model.ServiceTypeDisplayDto;
+import com.cts.bookingservice.model.UserDto;
+import com.cts.bookingservice.model.VehicleNameDto;
+
+public interface BookingService {
+	public BookingDto addBooking(BookingDto bookingDto);
+	public BookingDto getBookingById(int bookingId);
+	public List<BookingDto> getBookingsByUserId(int userId);
+	public String deleteBookingById(@PathVariable int bookingId);
+	public BookingDto updateBooking(BookingDto bookingDto);
+	public String getBookingStatus(@PathVariable int bookingId);
+	public BillToDto getUserFromBookingId(int bookingId);
+	public AutoFillDto autoFillUserDetails(int userId);
+	public List<VehicleNameDto> getAllVehicles(int userId);
+	public ResponseEntity<Map<String , Object>> completeService(int bookingId);
+	public List<InvoiceReciptDto> getUserInvoices (int userId);
+	public List<ServiceDetailsDto> getAllServiceCenters();
+	public List<ServiceTypeDisplayDto> getAllServiceTypes();
+	public int getVehicleIdFromName(String name);
+	public int getScIdFromName(String name);
+	public int getInvoiceId(int bookingId);
+	public List<BookingDto> getAllBookings();
+}

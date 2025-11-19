@@ -1,0 +1,68 @@
+.carContainer {
+    position: relative;
+    width: 100%;
+    margin: auto;
+  }
+  
+.carImage {
+    width: 100%;
+    display: block;
+  }
+  
+.hotspot {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 5;
+  }
+  
+.dialogBox {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    z-index: 10;
+    transform: translate(-50%, -100%);
+  }
+  
+    /* Medium devices (tablets, 768px and up) */
+    @media (max-width: 1440px) {
+      .dialogBox {
+        max-width: 250px;
+        max-height: 250px;
+        font-size: 1 rem;
+      }
+    } 
+  
+  
+  /* Medium devices (tablets, 768px and up) */
+  @media (max-width: 768px) {
+    .dialogBox {
+      max-width: 200px;
+      max-height: 180px;
+      font-size: 0.7rem;
+    }
+  }
+  
+  /* Small devices (phones, 480px and down) */
+  @media (max-width: 515px) {
+    .dialogBox {
+      max-width: 150px;
+      max-height: 150px;
+      font-size: 0.4rem;
+      /* padding: 10px; */
+    }
+  }
+
+  
+.dialogBox p {
+   overflow-wrap: break-word;
+   margin: 0 0 10px;
+}
+  
+  
+  

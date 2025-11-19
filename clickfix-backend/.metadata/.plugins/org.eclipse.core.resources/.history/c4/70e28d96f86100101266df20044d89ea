@@ -1,0 +1,70 @@
+package com.example.demo;
+ 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+ 
+@Configuration
+public class RouteConfig {
+	@Autowired
+	private AuthenticationFilter filter;
+ 
+	@Bean
+	RouteLocator routes(RouteLocatorBuilder builder) {
+		return builder.routes()
+				.route("USERSERVICE",
+						r -> r.path("/users/**").filters(f -> f.filter(filter)).uri("lb://USERSERVICE"))
+				.build();
+	}
+	
+	@Bean
+	RouteLocator routes2(RouteLocatorBuilder builder) {
+		return builder.routes()
+				               .route("BOOKING-SERVICE",
+				            		   r -> r.path("/booking-api/**").filters(f -> f.filter(filter)).uri("lb://BOOKING-SERVICE"))
+				               .build();
+	}
+	
+	@Bean
+	RouteLocator routes3(RouteLocatorBuilder builder) {
+		return builder.routes()
+				              .route("INVOICE-SERVICE", 
+				            		  r -> r.path("/invoice/**").filters(f -> f.filter(filter)).uri("lb://INVOICE-SERVICE"))
+				              .build();
+	}
+	
+	@Bean
+	RouteLocator routes4(RouteLocatorBuilder builder) {
+		return builder.routes()
+				              .route("MECHANIC-SERVICE", 
+				            		  r -> r.path("/mechanic/**").filters(f -> f.filter(filter)).uri("lb://MECHANIC-SERVICE"))
+				              .build();
+	}
+	
+	@Bean
+	RouteLocator routes5(RouteLocatorBuilder builder) {
+		return builder.routes()
+				              .route("SERVICECENTER-SERVICE", 
+				            		  r -> r.path("/servicecenter/**").filters(f -> f.filter(filter)).uri("lb://SERVICECENTER-SERVICE"))
+				              .build();
+	}
+	
+	@Bean
+	RouteLocator routes6(RouteLocatorBuilder builder) {
+		return builder.routes()
+				              .route("SERVICETYPE-SERVICE", 
+				            		  r -> r.path("/servicetype/**").filters(f -> f.filter(filter)).uri("lb://SERVICETYPE-SERVICE"))
+				              .build();
+	}
+	
+	@Bean
+	RouteLocator routes7(RouteLocatorBuilder builder) {
+		return builder.routes()
+				              .route("VEHICLE-SERVICE", 
+				            		  r -> r.path("/vehicle-api/**").filters(f -> f.filter(filter)).uri("lb://VEHICLE-SERVICE"))
+				              .build();
+	}
+ 
+}

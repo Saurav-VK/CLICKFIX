@@ -1,0 +1,24 @@
+package com.cts.Mechanic.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class Mechanic {
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "mechanics_id_generator")
+	@SequenceGenerator(name = "mechanics_id_generator" , sequenceName = "mechanic_id" , initialValue = 1 , allocationSize = 1)
+	private int mechanicId;
+	private int serviceCenterId;
+	private String name;
+	private String expertise;
+}

@@ -1,0 +1,43 @@
+.form-label {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .form-control:focus {
+    border-color: black !important;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6) !important;
+  }
+  
+  .addform-card {
+    width: 50%;
+    height: 100%;
+    border-radius: 12px;
+  }
+  
+.editfrom-style{
+  width: 100%;
+  height: 100%;
+  border-radius: 30px !important;
+    
+}
+
+  /* Add mode specific styling */
+  .add-mode {
+
+  }
+  
+  /* Edit mode specific styling */
+  .edit-mode {
+    border: 1px solid  black !important;
+    /* background-color: bisque !important; */
+  }
+
+  .modal-preview {
+    max-width: 200px;   /* Limits how wide the image can get */
+    max-height: 150px;  /* Keeps it from being too tall */
+    margin-top: 1rem;   /* Equivalent to Bootstrap's mt-3 */
+    object-fit: cover;  /* Preserves aspect ratio and prevents stretching */
+    border-radius: 0.5rem; /* Optional: adds some visual softness */
+  }
+  
+  

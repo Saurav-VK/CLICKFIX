@@ -1,0 +1,5 @@
+package com.cts.clickfix.vehicleservice.appconfig;
+
+public class WebConfig {
+
+}
